@@ -8,6 +8,7 @@ export async function seed(knex) {
         .insert([
             {
                 id: 1,
+                user_id: 1,
                 price: 100,
                 currency: "DKK",
                 title: "Copenhagen Coffee Crawl",
@@ -16,6 +17,7 @@ export async function seed(knex) {
             },
             {
                 id: 2,
+                user_id: 1,
                 price: 150,
                 currency: "DKK",
                 title: "After-Work Board Games Night",
@@ -24,6 +26,7 @@ export async function seed(knex) {
             },
             {
                 id: 3,
+                user_id: 1,
                 price: 250,
                 currency: "DKK",
                 title: "Beginner Pasta Workshop",
@@ -32,6 +35,7 @@ export async function seed(knex) {
             },
             {
                 id: 4,
+                user_id: 1,
                 price: 0,
                 currency: "DKK",
                 title: "Sunday Park Run & Stretch",
@@ -40,6 +44,7 @@ export async function seed(knex) {
             },
             {
                 id: 5,
+                user_id: 1,
                 price: 75,
                 currency: "DKK",
                 title: "Indie Film Screening: Short Nights",
@@ -48,6 +53,7 @@ export async function seed(knex) {
             },
             {
                 id: 6,
+                user_id: 1,
                 price: 180,
                 currency: "DKK",
                 title: "Photography Walk: City Lights",
@@ -56,6 +62,7 @@ export async function seed(knex) {
             },
             {
                 id: 7,
+                user_id: 1,
                 price: 120,
                 currency: "DKK",
                 title: "Bread & Butter Tasting",
@@ -64,6 +71,7 @@ export async function seed(knex) {
             },
             {
                 id: 8,
+                user_id: 1,
                 price: 300,
                 currency: "DKK",
                 title: "Live Jazz Trio at the Loft",
