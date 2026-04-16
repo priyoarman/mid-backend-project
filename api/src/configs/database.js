@@ -1,7 +1,7 @@
 import knex from "knex";
 
 const client = process.env.DB_CLIENT ?? "sqlite3";
-const default_db_filename = client === "sqlite3" ? "src/db/database.sqlite" : null;
+const default_db_filename = client === "sqlite3" ? "src/database.sqlite" : null;
 
 const connection = knex({
   client: client,
