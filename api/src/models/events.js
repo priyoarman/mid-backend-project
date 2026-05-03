@@ -30,7 +30,7 @@ const TABLE = "event";
  * @returns {import("knex").Knex.QueryBuilder}
  */
 function baseQuery(trx = db) {
-    return trx(TABLE);
+  return trx(TABLE);
 }
 
 /**
@@ -46,15 +46,24 @@ function baseQuery(trx = db) {
  * @returns {Promise<number>} Total matching rows
  */
 export async function countEvents(filters = {}, options = {}) {
-    const { trx } = options;
-    const qb = baseQuery(trx);
+  const { trx } = options;
+  const qb = baseQuery(trx);
 
-    // TODO (required project work): apply supported filters when filter features are implemented
+  // Apply filters
+  if (filters.search) {
+    qb.where(function () {
+      this.where("title", "like", `%${filters.search}%`).orWhere(
+        "description",
+        "like",
+        `%${filters.search}%`,
+      );
+    });
+  }
 
-    const row = await qb.count({ count: "*" }).first();
-    const count = row?.count ?? row?.["count(*)"] ?? 0;
+  const row = await qb.count({ count: "*" }).first();
+  const count = row?.count ?? row?.["count(*)"] ?? 0;
 
-    return Number(count);
+  return Number(count);
 }
 
 /**
@@ -82,22 +91,31 @@ export async function countEvents(filters = {}, options = {}) {
  * @returns {Promise<Array<Object>>}
  */
 export async function listEvents(filters = {}, options = {}) {
-    const {
-        orderBy = "id",
-        order = "asc",
-        trx,
-    } = options;
+  const { limit, offset, orderBy = "id", order = "asc", trx } = options;
 
-    const qb = baseQuery(trx).select("*");
+  const qb = baseQuery(trx).select("*");
 
-    // TODO (required project work): apply supported filters
+  // Apply filters
+  if (filters.search) {
+    qb.where(function () {
+      this.where("title", "like", `%${filters.search}%`).orWhere(
+        "description",
+        "like",
+        `%${filters.search}%`,
+      );
+    });
+  }
 
-    qb.orderBy(
-        orderBy,
-        String(order).toLowerCase() === "desc" ? "desc" : "asc"
-    );
+  qb.orderBy(orderBy, String(order).toLowerCase() === "desc" ? "desc" : "asc");
 
-    return qb;
+  if (limit !== undefined) {
+    qb.limit(limit);
+  }
+  if (offset !== undefined) {
+    qb.offset(offset);
+  }
+
+  return qb;
 }
 
 /**
@@ -112,11 +130,9 @@ export async function listEvents(filters = {}, options = {}) {
  * @returns {Promise<Object|null>}
  */
 export async function findEventById(id, { trx } = {}) {
-    const row = await baseQuery(trx)
-        .where({ id })
-        .first();
+  const row = await baseQuery(trx).where({ id }).first();
 
-    return row ?? null;
+  return row ?? null;
 }
 
 /**
@@ -132,9 +148,9 @@ export async function findEventById(id, { trx } = {}) {
  * with a real implementation.
  */
 export async function createEvent() {
-    throw new Error(
-        "Optional placeholder: createEvent is intentionally not implemented in the base skeleton"
-    );
+  throw new Error(
+    "Optional placeholder: createEvent is intentionally not implemented in the base skeleton",
+  );
 }
 
 /**
@@ -147,9 +163,9 @@ export async function createEvent() {
  * is added.
  */
 export async function updateEvent() {
-    throw new Error(
-        "Optional placeholder: updateEvent is intentionally not implemented in the base skeleton"
-    );
+  throw new Error(
+    "Optional placeholder: updateEvent is intentionally not implemented in the base skeleton",
+  );
 }
 
 /**
@@ -161,7 +177,7 @@ export async function updateEvent() {
  * It is NOT part of the required trainee implementation in the default scope.
  */
 export async function deleteEvent() {
-    throw new Error(
-        "Optional placeholder: deleteEvent is intentionally not implemented in the base skeleton"
-    );
+  throw new Error(
+    "Optional placeholder: deleteEvent is intentionally not implemented in the base skeleton",
+  );
 }
