@@ -4,7 +4,7 @@
  * This middleware should be registered last in the middleware stack
  * to catch any errors that occur in route handlers or other middleware.
  */
-export default function errorHandler(err, req, res) {
+export default function errorHandler(err, req, res, next) {
   // Log the error for debugging
   console.error(err);
 
