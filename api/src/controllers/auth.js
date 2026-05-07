@@ -7,8 +7,8 @@ import {
     findUserById,
 } from "#models/users.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-me";
-const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "7d";
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION;
 
 /**
  * POST /api/auth/signup
