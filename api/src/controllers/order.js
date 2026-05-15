@@ -22,7 +22,7 @@ export async function getOrders(req, res, next) {
       orders.map(async (order) => {
         const orderWithItems = await Order.getWithItems(order.id);
         return orderWithItems;
-      })
+      }),
     );
 
     res.status(200).json({
