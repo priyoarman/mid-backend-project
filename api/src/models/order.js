@@ -37,7 +37,8 @@ export const Order = {
       // Reset cart total
       await trx("cart").where("id", cartId).update("total_price", 0);
 
-      return this.getById(orderId);
+      // Return the order row from the same transaction connection
+      return trx("customer_order").where("id", orderId).first();
     });
   },
 
