@@ -4,6 +4,25 @@ import authRouter from "#routers/auth.js";
 import cartRouter from "#routers/cart.js";
 import orderRouter from "#routers/order.js";
 
+/**
+ * @swagger
+ * /api:
+ *   get:
+ *     tags:
+ *       - API
+ *     summary: API root
+ *     description: Returns a welcome message for the API.
+ *     responses:
+ *       200:
+ *         description: API root response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 const apiRouter = express.Router();
 
 apiRouter.get("/", (req, res) => {
