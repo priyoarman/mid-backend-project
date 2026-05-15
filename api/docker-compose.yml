@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: backend_mid
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_CLIENT: pg
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE_NAME: backend_mid
+      DB_USE_SSL: false
+      DB_USE_NULL_AS_DEFAULT: false
+    command: ["./docker-entrypoint.sh"]
+
+volumes:
+  db-data:
