@@ -6,6 +6,7 @@ import {
   updateEvent,
   deleteEvent,
 } from "#models/events.js";
+import { HttpError } from "#utils/httpError.js";
 
 /**
  * Event controller (MVC example)
@@ -133,10 +134,12 @@ export async function postEvent(req, res, next) {
   try {
     await createEvent(req.body);
 
-    return res.status(501).json({
-      error:
+    return next(
+      new HttpError(
+        501,
         "Optional placeholder: postEvent is intentionally not implemented in the base skeleton",
-    });
+      ),
+    );
   } catch (error) {
     next(error);
   }
@@ -155,10 +158,12 @@ export async function patchEvent(req, res, next) {
   try {
     await updateEvent(req.params.id, req.body);
 
-    return res.status(501).json({
-      error:
+    return next(
+      new HttpError(
+        501,
         "Optional placeholder: patchEvent is intentionally not implemented in the base skeleton",
-    });
+      ),
+    );
   } catch (error) {
     next(error);
   }
@@ -177,10 +182,12 @@ export async function removeEvent(req, res, next) {
   try {
     await deleteEvent(req.params.id);
 
-    return res.status(501).json({
-      error:
+    return next(
+      new HttpError(
+        501,
         "Optional placeholder: removeEvent is intentionally not implemented in the base skeleton",
-    });
+      ),
+    );
   } catch (error) {
     next(error);
   }
