@@ -170,25 +170,48 @@
         {
           "name": "Remove Cart Item",
           "request": {
-            "method": "PUT",
+            "method": "DELETE",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
               {
                 "key": "Authorization",
                 "value": "Bearer {{authToken}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\"quantity\":0}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/cart/items/1",
               "host": ["{{baseUrl}}"],
               "path": ["api", "cart", "items", "1"]
+            }
+          }
+        },
+        {
+          "name": "Checkout Cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.collectionVariables.set('orderId', jsonData.data.order.id);",
+                  "  console.log('Order ID saved: ' + jsonData.data.order.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/checkout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart", "checkout"]
             }
           }
         }
@@ -258,6 +281,45 @@
           }
         }
       ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}"]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [
@@ -268,6 +330,11 @@
     },
     {
       "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
       "value": "",
       "type": "string"
     }

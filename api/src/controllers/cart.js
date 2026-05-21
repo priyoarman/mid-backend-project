@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { Cart } from "#models/cart.js";
+import { Order } from "#models/order.js";
 import db from "#configs/database.js";
 
 /**
@@ -216,8 +217,141 @@ export async function updateCartItem(req, res, next) {
 }
 
 /**
- * Helper: Get cart with formatted items
+ * DELETE /api/cart/items/{itemId}
+ * Remove cart item
  */
+export async function deleteCartItem(req, res, next) {
+  try {
+    const { itemId } = req.params;
+
+    // Validation
+    if (!itemId) {
+      return res.status(400).json({
+        error: {
+          message: "itemId is required",
+          status: 400,
+        },
+      });
+    }
+
+    // Get cart item
+    const cartItem = await db("cart_item").where("id", itemId).first();
+    if (!cartItem) {
+      return res.status(404).json({
+        error: {
+          message: "Cart item not found",
+          status: 404,
+        },
+      });
+    }
+
+    // Verify cart ownership
+    const cart = await db("cart").where("id", cartItem.cart_id).first();
+    if (!cart) {
+      return res.status(404).json({
+        error: {
+          message: "Cart not found",
+          status: 404,
+        },
+      });
+    }
+
+    // Check if user has access to this cart
+    if (req.user) {
+      if (cart.user_id !== req.user.userId) {
+        return res.status(403).json({
+          error: {
+            message: "Forbidden - Cannot modify another user's cart",
+            status: 403,
+          },
+        });
+      }
+    } else {
+      const sessionId = getOrCreateSessionId(req);
+      if (cart.session_id !== sessionId) {
+        return res.status(403).json({
+          error: {
+            message: "Forbidden - Cannot modify another user's cart",
+            status: 403,
+          },
+        });
+      }
+    }
+
+    // Remove item
+    await Cart.removeItem(itemId);
+
+    // Get updated cart
+    const cartWithItems = await getCartWithItems(cart.id);
+
+    res.status(200).json({
+      data: {
+        cart: cartWithItems,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * POST /api/cart/checkout
+ * Checkout cart and create order (transactional)
+ */
+export async function checkoutCart(req, res, next) {
+  try {
+    // Only authenticated users can checkout
+    if (!req.user) {
+      return res.status(401).json({
+        error: {
+          message: "Authentication required for checkout",
+          status: 401,
+        },
+      });
+    }
+
+    // Get user's cart
+    let cart = await Cart.getByUserId(req.user.userId);
+    if (!cart) {
+      // Create empty cart if none exists
+      cart = await Cart.create(req.user.userId);
+    }
+
+    // Check if cart has items
+    const cartItems = await db("cart_item").where("cart_id", cart.id);
+    if (cartItems.length === 0) {
+      return res.status(400).json({
+        error: {
+          message: "Cart is empty",
+          status: 400,
+        },
+      });
+    }
+
+    // Create order from cart (transactional)
+    const order = await Order.createFromCart(req.user.userId, cart.id);
+
+    // Get order with items
+    const orderWithItems = await Order.getWithItems(order.id);
+
+    res.status(201).json({
+      data: {
+        order: orderWithItems,
+      },
+    });
+  } catch (error) {
+    if (error.message === "Cart is empty") {
+      return res.status(400).json({
+        error: {
+          message: "Cart is empty",
+          status: 400,
+        },
+      });
+    }
+    next(error);
+  }
+}
+
 async function getCartWithItems(cartId) {
   const cart = await db("cart").where("id", cartId).first();
 
