@@ -2,7 +2,7 @@
 
 This package sets up a [Express](https://expressjs.com/) API server and a connection to a database (SQLite by default) using [Knex](https://knexjs.org/).
 
-For development you can run the command `npm run dev` which uses `nodemon` to watch files and restarts the server when a change happens. You can find the API at [http://localhost:3001/api](http://localhost:3001/api). 
+For development you can run the command `npm run dev` which uses `nodemon` to watch files and restarts the server when a change happens. You can find the API at [http://localhost:3001/api](http://localhost:3001/api).
 
 There is an example route set up at "/" which you can implement to quickly test the connection to the database.
 
@@ -17,19 +17,20 @@ When you start a fresh project, check out `.env-template` to get started. Create
 ## Database clients
 
 The package comes installed with an SQLite, MySQL, and PostgreSQL client. Here's a quick suggestion for use cases:
+
 1. SQLite for quick, simple file-based storage
 2. MySQL for more advanced data storage (requires you to run a database service)
 3. PostgreSQL, similar to MySQL and used on our recommended hosting platform Render.com
 
-You can decide which client to use by changing the `DB_CLIENT` environment variable. See `.env-template` for more info. 
+You can decide which client to use by changing the `DB_CLIENT` environment variable. See `.env-template` for more info.
 
 ## Advanced database management
 
-You can get far with a simple `.sql` file to manage your database but if you'd prefer to manage your database with Knex, you can use [Knex Migrations](https://knexjs.org/guide/migrations.html) to set up your schema (as well as rollback schema changes across versions).  
+You can get far with a simple `.sql` file to manage your database but if you'd prefer to manage your database with Knex, you can use [Knex Migrations](https://knexjs.org/guide/migrations.html) to set up your schema (as well as rollback schema changes across versions).
 
-You can also use [Knex Seeds](https://knexjs.org/guide/migrations.html#seed-files) to populate your database with data.  
+You can also use [Knex Seeds](https://knexjs.org/guide/migrations.html#seed-files) to populate your database with data.
 
-Combined, these two techniques make it very easy to experiment with changes to your database or recover your database if something happens to it.  
+Combined, these two techniques make it very easy to experiment with changes to your database or recover your database if something happens to it.
 
 It also makes it possible to share temporary schema changes with others during Pull Request testing.
 
@@ -182,5 +183,43 @@ In the next screen you'll see the output of your build step which is downloading
 
 Once you see the text "Your service is live" you can test your API with Postman by using the deployed URL, which should be something like `https://hyf-template-api.onrender.com/api`. You should see the output the response from your "/" route.
 
-If you've got this far, you probably want to deploy your web app next. Head over to the README.md in your app directory for instructions.
+### Deploying with Docker
 
+If you want to deploy the API using a containerized setup, this repository includes a `Dockerfile` and `docker-compose.yml`.
+
+1. Build the API container:
+
+```bash
+cd api
+docker compose build
+```
+
+2. Start the database and API services:
+
+```bash
+docker compose up -d
+```
+
+3. Verify the server is available at:
+
+```text
+http://localhost:3001/api
+```
+
+4. View Swagger docs at:
+
+```text
+http://localhost:3001/docs
+```
+
+5. To stop the services:
+
+```bash
+docker compose down
+```
+
+If you use Docker Compose locally with PostgreSQL, the compose file already configures the API service to connect to the database and run migrations at startup.
+
+If you prefer SQLite locally, keep using the `.env-template` setup and `npm run start` instead.
+
+If you've got this far, you probably want to deploy your web app next. Head over to the README.md in your app directory for instructions.
