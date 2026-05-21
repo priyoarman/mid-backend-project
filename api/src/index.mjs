@@ -18,11 +18,11 @@
  * ================================================================
  */
 
-import "dotenv/config";           // Loads environment variables from .env
-import express from "express";    // Express web framework
-import cors from "cors";          // Cross-Origin Resource Sharing middleware
+import "dotenv/config"; // Loads environment variables from .env
+import express from "express"; // Express web framework
+import cors from "cors"; // Cross-Origin Resource Sharing middleware
 import bodyParser from "body-parser"; // JSON body parsing
-import rootRouter from "#routers";    // Main router aggregator
+import rootRouter from "#routers"; // Main router aggregator
 import swaggerSetup from "#configs/swagger.js"; // Swagger documentation setup
 import middlewares from "#middlewares"; // Global middleware array
 
@@ -54,6 +54,13 @@ for (const middleware of middlewares) {
 app.use("/", rootRouter);
 
 // ------------------------------------------------------------------
+// Register Error Handling Middleware
+// ------------------------------------------------------------------
+// Error handlers must be registered after routes to catch errors properly.
+import errorHandler from "#middlewares/errorHandler.js";
+app.use(errorHandler);
+
+// ------------------------------------------------------------------
 // Swagger Setup
 // ------------------------------------------------------------------
 // IMPORTANT:
@@ -70,6 +77,6 @@ const port = process.env.PORT ?? 3000;
 
 app.listen(port, () => {
   console.info(
-      `${process.env.APP_NAME || "Backend-Mid-Specialism"} app started on port ${port}`
+    `${process.env.APP_NAME || "Backend-Mid-Specialism"} app started on port ${port}`,
   );
 });

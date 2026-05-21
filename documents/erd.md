@@ -1,9 +1,58 @@
-# This schema manages a basic Event system where Users act as organizers.
+# E-commerce Database ERD (W2)
 
-- USER: Stores identity info (ID, Unique Email, Name).
+## Tables
 
-- EVENT: Stores listing details (ID, Title, Price, Description) and metadata.
+### USER
+- id (PK)
+- email (UNIQUE, NOT NULL)
+- password_hash (NOT NULL)
+- name (NOT NULL)
+- created_at, updated_at
 
-- Link: The organizer_id (Foreign Key) connects each event to exactly one user.
+### EVENT (Products)
+- id (PK)
+- title
+- description
+- price
+- currency
+- date, time, venue, capacity
+- created_at, updated_at
 
-- Logic: One user can create many events, but each event belongs to only one creator.
+### CART
+- id (PK)
+- user_id (FK → USER, NULLABLE)
+- session_id (VARCHAR, NULLABLE)
+- total_price (DECIMAL, calculated)
+- created_at, updated_at
+- UNIQUE: Either user_id OR session_id (one cart per user max)
+
+### CART_ITEM
+- id (PK)
+- cart_id (FK → CART, NOT NULL)
+- event_id (FK → EVENT, NOT NULL)
+- quantity (INT, NOT NULL)
+- unit_price (DECIMAL, NOT NULL, snapshot at purchase time)
+- created_at, updated_at
+
+### CUSTOMER_ORDER
+- id (PK)
+- user_id (FK → USER, NOT NULL) - orders always belong to users
+- total_amount (DECIMAL, snapshot)
+- status (ENUM: pending, completed, cancelled)
+- created_at, updated_at
+
+### ORDER_ITEM
+- id (PK)
+- customer_order_id (FK → CUSTOMER_ORDER, NOT NULL)
+- event_id (FK → EVENT, NOT NULL)
+- quantity (INT, NOT NULL)
+- unit_price (DECIMAL, NOT NULL, snapshot)
+- created_at, updated_at
+
+## Relationships
+- USER → EVENT (one user creates many events)
+- USER → CART (one user has one active cart)
+- CART → CART_ITEM (one cart has many items)
+- EVENT → CART_ITEM (one event appears in many carts)
+- USER → CUSTOMER_ORDER (one user has many orders)
+- CUSTOMER_ORDER → ORDER_ITEM (one order has many items)

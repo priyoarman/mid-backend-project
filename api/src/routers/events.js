@@ -1,10 +1,10 @@
 import express from "express";
 import {
-    getEvents,
-    getEventById,
-    postEvent,
-    patchEvent,
-    removeEvent,
+  getEvents,
+  getEventById,
+  postEvent,
+  patchEvent,
+  removeEvent,
 } from "#controllers/events.js";
 
 const eventsRouter = express.Router();
@@ -28,7 +28,7 @@ const eventsRouter = express.Router();
  * /api/events:
  *   get:
  *     summary: Get paginated list of events
- *     description: Returns a paginated list of events. Pagination is zero-based.
+ *     description: Returns a paginated list of events. Supports search query.
  *     tags:
  *       - Events
  *     parameters:
@@ -36,10 +36,25 @@ const eventsRouter = express.Router();
  *         name: page
  *         schema:
  *           type: integer
- *           minimum: 0
- *           default: 0
+ *           minimum: 1
+ *           default: 1
  *         required: false
- *         description: Page number (zero-based)
+ *         description: Page number (1-based)
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         required: false
+ *         description: Number of items per page
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Search query for title or description
  *     responses:
  *       200:
  *         description: Paginated list of events
@@ -79,16 +94,16 @@ const eventsRouter = express.Router();
  *                   properties:
  *                     page:
  *                       type: integer
- *                       example: 0
+ *                       example: 1
  *                     pageSize:
  *                       type: integer
- *                       example: 5
+ *                       example: 20
  *                     totalItems:
  *                       type: integer
  *                       example: 245
  *                     totalPages:
  *                       type: integer
- *                       example: 49
+ *                       example: 13
  *       400:
  *         description: Invalid query parameters
  *       500:

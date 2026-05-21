@@ -1,10 +1,10 @@
 import {
-    listEvents,
-    countEvents,
-    findEventById,
-    createEvent,
-    updateEvent,
-    deleteEvent,
+  listEvents,
+  countEvents,
+  findEventById,
+  createEvent,
+  updateEvent,
+  deleteEvent,
 } from "#models/events.js";
 
 /**
@@ -58,37 +58,40 @@ import {
  * - Sorting validation should be handled before passing orderBy
  */
 export async function getEvents(req, res, next) {
-    try {
-        const PAGE_SIZE = 5;
+  try {
+    const PAGE_SIZE = Number(req.query.pageSize) || 20;
 
-        // Parse page safely (ensure non-negative integer)
-        const page = Math.max(Number(req.query.page ?? 0), 0);
-        const offset = page * PAGE_SIZE;
+    // Parse page safely (ensure positive integer, 1-based)
+    const page = Math.max(Number(req.query.page ?? 1), 1);
+    const offset = (page - 1) * PAGE_SIZE;
 
-        const filters = {}; // TODO (required project work): map req.query filters here
-
-        const data = await listEvents(filters, {
-            limit: PAGE_SIZE,
-            offset,
-            orderBy: "id",
-            order: "asc",
-        });
-
-        const totalItems = await countEvents(filters);
-        const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-
-        res.json({
-            data,
-            meta: {
-                page,
-                pageSize: PAGE_SIZE,
-                totalItems,
-                totalPages,
-            },
-        });
-    } catch (error) {
-        next(error);
+    const filters = {};
+    if (req.query.q) {
+      filters.search = req.query.q;
     }
+
+    const data = await listEvents(filters, {
+      limit: PAGE_SIZE,
+      offset,
+      orderBy: "id",
+      order: "asc",
+    });
+
+    const totalItems = await countEvents(filters);
+    const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+
+    res.json({
+      data,
+      meta: {
+        page,
+        pageSize: PAGE_SIZE,
+        totalItems,
+        totalPages,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 /**
@@ -101,19 +104,19 @@ export async function getEvents(req, res, next) {
  * functionality is explicitly added to the project.
  */
 export async function getEventById(req, res, next) {
-    try {
-        const event = await findEventById(req.params.id);
+  try {
+    const event = await findEventById(req.params.id);
 
-        if (!event) {
-            return res.status(404).json({
-                error: "Event not found",
-            });
-        }
-
-        res.json({ data: event });
-    } catch (error) {
-        next(error);
+    if (!event) {
+      const error = new Error("Event not found");
+      error.statusCode = 404;
+      throw error;
     }
+
+    res.json({ data: event });
+  } catch (error) {
+    next(error);
+  }
 }
 
 /**
@@ -126,18 +129,17 @@ export async function getEventById(req, res, next) {
  * scope is explicitly added.
  */
 export async function postEvent(req, res, next) {
+  // OPTIONAL TODO: implement this handler only if optional scope is taken on
+  try {
+    await createEvent(req.body);
 
-    // OPTIONAL TODO: implement this handler only if optional scope is taken on
-    try {
-        await createEvent(req.body);
-
-        return res.status(501).json({
-            error:
-                "Optional placeholder: postEvent is intentionally not implemented in the base skeleton",
-        });
-    } catch (error) {
-        next(error);
-    }
+    return res.status(501).json({
+      error:
+        "Optional placeholder: postEvent is intentionally not implemented in the base skeleton",
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 /**
@@ -149,17 +151,17 @@ export async function postEvent(req, res, next) {
  * It is NOT part of the required trainee implementation in the default scope.
  */
 export async function patchEvent(req, res, next) {
-    // OPTIONAL TODO: implement this handler only if optional scope is taken on
-    try {
-        await updateEvent(req.params.id, req.body);
+  // OPTIONAL TODO: implement this handler only if optional scope is taken on
+  try {
+    await updateEvent(req.params.id, req.body);
 
-        return res.status(501).json({
-            error:
-                "Optional placeholder: patchEvent is intentionally not implemented in the base skeleton",
-        });
-    } catch (error) {
-        next(error);
-    }
+    return res.status(501).json({
+      error:
+        "Optional placeholder: patchEvent is intentionally not implemented in the base skeleton",
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 /**
@@ -171,15 +173,15 @@ export async function patchEvent(req, res, next) {
  * It is NOT part of the required trainee implementation in the default scope.
  */
 export async function removeEvent(req, res, next) {
-    // OPTIONAL TODO: implement this handler only if optional scope is taken on
-    try {
-        await deleteEvent(req.params.id);
+  // OPTIONAL TODO: implement this handler only if optional scope is taken on
+  try {
+    await deleteEvent(req.params.id);
 
-        return res.status(501).json({
-            error:
-                "Optional placeholder: removeEvent is intentionally not implemented in the base skeleton",
-        });
-    } catch (error) {
-        next(error);
-    }
+    return res.status(501).json({
+      error:
+        "Optional placeholder: removeEvent is intentionally not implemented in the base skeleton",
+    });
+  } catch (error) {
+    next(error);
+  }
 }
