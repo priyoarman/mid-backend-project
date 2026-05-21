@@ -48,6 +48,7 @@
     "#middlewares/*": "./src/middlewares/*",
     "#models/*": "./src/models/*",
     "#routers": "./src/routers/index.js",
-    "#routers/*": "./src/routers/*"
+    "#routers/*": "./src/routers/*",
+    "#utils/*": "./src/utils/*"
   }
 }
